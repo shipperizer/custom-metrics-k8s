@@ -1,0 +1,17 @@
+apiVersion: skaffold/v2beta9
+kind: Config
+deploy:
+  kubectl:
+    manifests:
+      - custom-metrics-api.yaml
+  helm:
+    releases:
+      - name: "prometheus-adapter"
+        chartPath: "prometheus-community/prometheus-adapter"
+        remote: true
+        setValues:
+          prometheus.url: "http://prometheus-server.default.svc.cluster.local"
+          prometheus.port: 80
+      - name: "prometheus"
+        chartPath: "prometheus-community/prometheus"
+        remote: true
