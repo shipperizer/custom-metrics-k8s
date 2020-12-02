@@ -81,6 +81,42 @@ acabbia@ldcl141282m 19:47:49 π  kubectl get --raw /apis/custom.metrics.k8s.io/v
 }
 ```
 
+```
+acabbia@ldcl141282m 16:33:04 π  kubectl get --raw '/apis/custom.metrics.k8s.io/v1beta1/namespaces/default/pods/*/http_requests_per_second' |jq
+{
+  "kind": "MetricValueList",
+  "apiVersion": "custom.metrics.k8s.io/v1beta1",
+  "metadata": {
+    "selfLink": "/apis/custom.metrics.k8s.io/v1beta1/namespaces/default/pods/%2A/http_requests_per_second"
+  },
+  "items": [
+    {
+      "describedObject": {
+        "kind": "Pod",
+        "namespace": "default",
+        "name": "sample-app-8697c9f9b9-m94td",
+        "apiVersion": "/v1"
+      },
+      "metricName": "http_requests_per_second",
+      "timestamp": "2020-12-02T16:38:15Z",
+      "value": "33m",
+      "selector": null
+    },
+    {
+      "describedObject": {
+        "kind": "Pod",
+        "namespace": "default",
+        "name": "sample-app-8697c9f9b9-p4q8t",
+        "apiVersion": "/v1"
+      },
+      "metricName": "http_requests_per_second",
+      "timestamp": "2020-12-02T16:38:15Z",
+      "value": "33m",
+      "selector": null
+    }
+  ]
+}
+```
 
 ## Useful links
 
