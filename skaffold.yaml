@@ -1,17 +1,46 @@
 apiVersion: skaffold/v2beta9
 kind: Config
 deploy:
-  kubectl:
-    manifests:
-      - custom-metrics-api.yaml
+    # kubectl:
+    #   manifests:
+    #     - custom-metrics-api.yaml
   helm:
     releases:
       - name: "prometheus-adapter"
         chartPath: "prometheus-community/prometheus-adapter"
         remote: true
+        upgradeOnChange: true
         setValues:
-          prometheus.url: "http://prometheus-server.default.svc.cluster.local"
+          logLevel: 10
+          prometheus.url: http://prometheus-server.default.svc.cluster.local
           prometheus.port: 80
+          prometheus.path: ""
+          metricsRelistInterval: 5m
+          rules.default: true
+          # rules.custom[0].seriesQuery: labs_api_count{kubernetes_namespace!=""\,kubernetes_pod_name!=""}
+          # rules.custom[0].resources.overrides.kubernetes_namespace.resource: namespace
+          # rules.custom[0].resources.overrides.kubernetes_pod_name.resource: pod
+          # rules.custom[0].resources.overrides.labs_service.resource: service
+          # rules.custom[0].resources.template: <<.Resource>>
+          # rules.custom[0].name.as: http_requests_per_second
+          # rules.custom[0].name.matches: labs_api_count
+          # rules.custom[0].metricsQuery: \sum(rate(<<.Series>>{<<.LabelMatchers>>}[2m])) by (<<.GroupBy>>)\
+          rules.custom[0].seriesQuery: labs_api_count
+          # rules.custom[0].metricsQuery: 'sum(<<.Series>>{<<.LabelMatchers>>}) by (service)'
+          rules.custom[0].metricsQuery: 'sum(<<.Series>>{<<.LabelMatchers>>})'
+          rules.custom[0].resources.template: <<.Resource>>
+          rules.custom[0].resources.overrides.kubernetes_namespace.resource: "namespace"
+          rules.custom[0].resources.overrides.kubernetes_pod_name.resource: "pod"
+          rules.custom[0].resources.overrides.kubernetes_name.resource: "service"
+
+profiles:
+- name: deps
+  deploy:
+    helm:
+      releases:
       - name: "prometheus"
         chartPath: "prometheus-community/prometheus"
         remote: true
+        setValues:
+          alertmanager.enabled: false
+          pushgateway.enabled: false
