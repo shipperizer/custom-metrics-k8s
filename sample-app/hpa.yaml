@@ -1,0 +1,28 @@
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  labels:
+    app: sample-app
+  name: sample-app
+spec:
+  maxReplicas: 25
+  minReplicas: 1
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: sample-app
+  metrics:
+  - type: Object
+    object:
+      metric:
+        name: http_requests_total
+        selector:
+          matchLabels:
+            app: sample-app
+      target:
+        type: AverageValue
+        averageValue: 1000
+      describedObject:
+        kind: Deployment
+        apiVersion: "apps/v1"
+        name: sample-app
