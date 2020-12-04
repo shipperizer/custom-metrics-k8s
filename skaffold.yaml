@@ -7,11 +7,11 @@ deploy:
 
 
 profiles:
-- name: deps
+- name: prometheus
+  patches:
+    - op: remove
+      path: /deploy/kubectl
   deploy:
-    kubectl:
-      manifests:
-        - "metrics-server.yaml"
     helm:
       releases:
         - name: "prometheus"
@@ -21,11 +21,19 @@ profiles:
           setValues:
             alertmanager.enabled: false
             pushgateway.enabled: false
+- name: prometheus-adapter
+  patches:
+    - op: remove
+      path: /deploy/kubectl
+  deploy:
+    helm:
+      releases:
         - name: "prometheus-adapter"
           chartPath: "prometheus-community/prometheus-adapter"
           remote: true
           upgradeOnChange: true
           setValues:
+            dnsPolicy: ClusterFirst
             logLevel: 6
             prometheus.url: http://prometheus-server.default.svc.cluster.local
             prometheus.port: 80
