@@ -15,7 +15,7 @@ spec:
   - type: Object
     object:
       metric:
-        name: http_requests_total
+        name: http_requests_per_second
         selector:
           matchLabels:
             app: sample-app
